@@ -1,0 +1,39 @@
+# This file used for both developer and demo purposes.
+# It contains environment
+version: '3.7'
+
+services:
+
+  postgresql:
+    image: postgres:15.1-alpine3.17
+    restart: unless-stopped
+    ports:
+      - 35431:5432
+    volumes:
+      - ./docker/postgresql_dev/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d:z
+      - postgres_data:/var/lib/postgresql/data:z
+    environment:
+      - POSTGRES_PASSWORD=postgresqlPassword
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "1"
+
+  redis:
+    image: redis:7.0.8-alpine3.17
+    hostname: redis
+    restart: unless-stopped
+    ports:
+      - 36378:6379
+    volumes:
+      - redis_data_dir:/data:z
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "1"
+
+volumes:
+  postgres_data:
+  redis_data_dir:

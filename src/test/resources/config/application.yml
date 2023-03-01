@@ -1,0 +1,135 @@
+
+logging:
+  level:
+    root: INFO
+    org.springframework.test.web.servlet.result: WARN
+    org.springframework.boot.test.context.SpringBootTestContextBootstrapper: WARN
+    org.springframework.test.context.transaction.TransactionContext: WARN
+    org.springframework.test.context.support.AbstractContextLoader: WARN
+    org.springframework.security: WARN
+    org.mockserver: WARN
+  pattern:
+    console: "%d{dd.MM.yyyy HH:mm:ss.SSS} %-5level @aaa [%thread] %logger{36}:%line %msg%n"
+
+custom.base-url: "http://localhost:${server.port}"
+
+# https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-email.html
+# https://yandex.ru/support/mail-new/mail-clients.html
+# https://stackoverflow.com/questions/411331/using-javamail-with-tls
+spring.mail:
+  testConnection: false
+  host: 127.0.0.1
+  port: 3125
+  username: testEmailUsername
+  password: testEmailPassword
+  properties:
+    # mail.smtp.starttls.enable: "true"
+    # mail.smtp.ssl.enable: "true"
+    mail.smtp.connectiontimeout: 5000
+    mail.smtp.timeout: 3000
+    mail.smtp.writetimeout: 5000
+
+
+spring.session.timeout: 2d
+
+spring:
+  application:
+    name: aaa
+  data:
+    ldap:
+      repositories:
+        enabled: false
+
+custom:
+  email:
+    from: testEmailUsername@test.example.com
+  registration:
+    email:
+      subject: "Registration confirmation"
+  confirmation:
+    registration:
+      token:
+        ttl-minutes: 5
+  password-reset:
+    email:
+      subject: "Password reset"
+    token:
+      ttl-minutes: 5
+  online-estimation: 10m
+  user-online-batch-size: 20
+  user-online-cron: "*/20 * * * * *"
+
+server.port: 9080
+
+server.tomcat.basedir: ${java.io.tmpdir}/com.github.nkonev.aaa.tomcat
+spring.servlet.multipart.max-file-size: 6MB
+spring.servlet.multipart.max-request-size: 8MB
+server.servlet.encoding.force-response: true
+server.servlet.session.cookie.name: VIDEOCHAT_SESSION
+
+custom.it.user: admin
+custom.it.password: admin
+custom.it.user.id: 1
+
+custom.htmlunit.implicitly-wait-timeout: 10000
+custom.htmlunit.window-height: 900
+custom.htmlunit.window-width: 1600
+
+
+spring.datasource:
+    name: aaa_ds
+    type: org.apache.tomcat.jdbc.pool.DataSource
+    # https://jdbc.postgresql.org/documentation/head/connect.html#connection-parameters
+    url: jdbc:postgresql://127.0.0.1:35431/aaa?connectTimeout=10&socketTimeout=40
+    username: aaa
+    password: "aaaPazZw0rd"
+    driverClassName: org.postgresql.Driver
+    # https://docs.spring.io/spring-boot/docs/2.0.0.M7/reference/htmlsingle/#boot-features-connect-to-production-database
+    # https://tomcat.apache.org/tomcat-8.5-doc/jdbc-pool.html#Common_Attributes
+    # https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-connect-to-production-database
+    tomcat:
+      minIdle: 4
+      maxIdle: 8
+      maxActive: 10
+      maxWait: 60000
+      testOnBorrow: true
+      testOnConnect: true
+      testWhileIdle: true
+      timeBetweenEvictionRunsMillis: 5000
+      validationQuery: SELECT 1;
+      validationQueryTimeout: 4
+      logValidationErrors: true
+
+# https://docs.spring.io/spring-boot/docs/2.0.0.M7/reference/htmlsingle/#howto-execute-flyway-database-migrations-on-startup
+# https://flywaydb.org/documentation/configfiles
+spring.flyway:
+  locations: classpath:/db/migration, classpath:/db/demo
+  drop-first: true
+  out-of-order: true
+
+spring.redis.url: redis://127.0.0.1:36378/0
+
+spring.rabbitmq:
+  addresses: localhost:36672
+  username: videoChat
+  password: videoChatPazZw0rd
+
+management.endpoints.web.exposure.include: '*'
+management.endpoint.health.show-details: always
+management:
+  health:
+    mail:
+      enabled: false
+  server:
+    port: 3006
+    ssl:
+      enabled: false
+    add-application-context-header: false
+
+spring.ldap.embedded:
+  base-dn: dc=springframework,dc=org
+  ldif: classpath:test-server.ldif
+
+custom.ldap.auth:
+  enabled: true
+  filter: "uid={0}"

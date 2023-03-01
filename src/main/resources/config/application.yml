@@ -1,0 +1,153 @@
+# logging.pattern.console: '%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} traceId=%X{traceId} spanId=%X{spanId} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-50.50(%logger{49}:%line)){cyan} %clr(:){faint} %m%n%wEx'
+#logging.level.org.springframework.boot.web.servlet: TRACE
+#logging.level.org.springframework.security: TRACE
+#logging.level.org.springframework.security.oauth2: DEBUG
+#logging.level.org.apache.tomcat.jdbc.pool: TRACE
+#logging.level.org.springframework.security: DEBUG
+#logging.level.org.springframework.session: DEBUG
+#logging.level.org.springframework.security.web: DEBUG
+#logging.level.org.apache.catalina: TRACE
+#logging.level.org.springframework.web: DEBUG
+#logging.level.org.hibernate.SQL: DEBUG
+#logging.level.org.hibernate.type: TRACE
+
+custom.base-url: "http://localhost:${server.port}"
+
+# https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-email.html
+# https://yandex.ru/support/mail-new/mail-clients.html
+# https://stackoverflow.com/questions/411331/using-javamail-with-tls
+spring.mail:
+  testConnection: false
+  host: smtp.yandex.ru
+  port: 465
+  username: username
+  password: password
+  properties:
+    # mail.smtp.starttls.enable: "true"
+    mail.smtp.ssl.enable: "true"
+    mail.smtp.connectiontimeout: 5000
+    mail.smtp.timeout: 3000
+    mail.smtp.writetimeout: 5000
+
+spring.session.timeout: 2d
+
+spring:
+  application:
+    name: aaa
+  data:
+    ldap:
+      repositories:
+        enabled: false
+
+
+  sleuth:
+    web:
+      tomcat:
+        enabled: true
+    propagation:
+      type:
+        - JAEGER
+
+    otel:
+      exporter:
+        jaeger:
+          endpoint: http://localhost:14250
+      processor:
+        batch:
+          schedule-delay: 0
+          max-export-batch-size: 1
+          max-queue-size: 1
+      config:
+        trace-id-ratio-based: 1.0
+
+
+
+custom:
+  email:
+    from: "username@yandex.ru"
+  registration:
+    email:
+      subject: "Registration confirmation"
+  confirmation:
+    registration:
+      token:
+        ttl-minutes: 5
+  password-reset:
+    email:
+      subject: "Password reset"
+    token:
+      ttl-minutes: 5
+  online-estimation: 10m
+  user-online-batch-size: 20
+  user-online-cron: "*/20 * * * * *"
+
+server.tomcat.accesslog.enabled: false
+server.tomcat.accesslog.pattern: '%t %a "%r" %s (%D ms)'
+server.port: 8060
+
+server.tomcat.basedir: ${java.io.tmpdir}/com.github.nkonev.aaa.tomcat
+spring.servlet.multipart.max-file-size: 6MB
+spring.servlet.multipart.max-request-size: 8MB
+server.servlet.encoding.force-response: true
+server.servlet.session.cookie.name: VIDEOCHAT_SESSION
+
+# this is URL
+spring.mvc.static-path-pattern: /**
+# You need to remove "file:..." element for production or you can to remove spring.resources.static-locations
+# first element - for eliminate manual restart app in IntelliJ for copy compiled js to target/classes, last slash is important, second element - for documentation
+spring.web.resources.static-locations: file:aaa/src/main/resources/static/, classpath:/static/
+
+
+spring.datasource:
+    name: aaa_ds
+    type: org.apache.tomcat.jdbc.pool.DataSource
+    # https://jdbc.postgresql.org/documentation/head/connect.html#connection-parameters
+    url: jdbc:postgresql://127.0.0.1:35431/aaa?connectTimeout=10&socketTimeout=40&ApplicationName=aaa-app
+    username: aaa
+    password: "aaaPazZw0rd"
+    driverClassName: org.postgresql.Driver
+    # https://docs.spring.io/spring-boot/docs/2.0.0.M7/reference/htmlsingle/#boot-features-connect-to-production-database
+    # https://tomcat.apache.org/tomcat-8.5-doc/jdbc-pool.html#Common_Attributes
+    # https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-connect-to-production-database
+    tomcat:
+      minIdle: 4
+      maxIdle: 8
+      maxActive: 10
+      maxWait: 60000
+      testOnBorrow: true
+      testOnConnect: true
+      testWhileIdle: true
+      timeBetweenEvictionRunsMillis: 5000
+      validationQuery: SELECT 1;
+      validationQueryTimeout: 4
+      logValidationErrors: true
+      # db-properties:
+
+# https://docs.spring.io/spring-boot/docs/2.0.0.M7/reference/htmlsingle/#howto-execute-flyway-database-migrations-on-startup
+# https://flywaydb.org/documentation/configfiles
+spring.flyway:
+  locations: classpath:/db/migration
+  drop-first: false
+  out-of-order: true
+
+spring.redis.url: redis://127.0.0.1:36378/0
+
+spring.rabbitmq:
+  addresses: localhost:36672
+  username: videoChat
+  password: videoChatPazZw0rd
+
+management.endpoints.web.exposure.include: '*'
+management.endpoint.health.show-details: always
+management:
+  health:
+    mail:
+      enabled: false
+    ldap:
+      enabled: false
+  server:
+    port: 3005
+    ssl:
+      enabled: false
+    add-application-context-header: false
+
